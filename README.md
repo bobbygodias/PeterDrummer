@@ -10,6 +10,12 @@ Toque bateria no ritmo da sua própria música no Android (celular, tablet ou TV
 
 ---
 
+
+## 🎬 Vídeo de introdução (10s)
+- Link enviado: **https://drive.google.com/file/d/128ZM10Tj9-PjYlbRDdSzx1X6bHDDiV5T/view?usp=sharing**
+- Para usar localmente no app: exporte para `intro.mp4` e coloque em `Assets/StreamingAssets/intro.mp4`.
+- Script de controle: `Unity/Assets/Scripts/Visual/IntroVideoController.cs` (autoplay + skip por toque).
+
 ## 🎮 Visão de layout (paisagem)
 - **Metade superior:** arte do personagem + animações de batida.
 - **Metade inferior:** esteira de notas rolando da direita para a esquerda.
@@ -37,6 +43,7 @@ Scripts criados em `Unity/Assets/Scripts`:
 - `Visual/CharacterVisualController.cs`
 - `Visual/HudFeedbackController.cs`
 - `Visual/ResultsPanelController.cs`
+- `Visual/IntroVideoController.cs`
 - `Data/RhythmTypes.cs`
 
 Detalhes de arquitetura e matemática de sincronização:

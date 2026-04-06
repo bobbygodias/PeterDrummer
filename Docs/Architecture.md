@@ -21,6 +21,7 @@
   - `CharacterVisualController`: anima personagem em eventos de input.
   - `HudFeedbackController`: atualiza score/combo/judgement na UI.
   - `ResultsPanelController`: mostra resultado no fim da música.
+  - `IntroVideoController`: toca vídeo de introdução e permite skip por toque.
 - **Data**
   - `DrumLane`, `BeatEvent`, `HitJudgement` e `GameDifficulty`: tipos compartilhados.
 
