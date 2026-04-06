@@ -19,7 +19,21 @@ namespace PeterDrummer.InputSystem
         [SerializeField] private double goodWindowSec = 0.090;
 
         public event Action<DrumLane> OnLanePlayed;
-        public event Action<string> OnHitFeedback;
+        public event Action<DrumLane, HitJudgement, double> OnJudgement;
+
+        private void OnEnable()
+        {
+            kickZone.OnAutoMiss += RegisterAutoMiss;
+            snareZone.OnAutoMiss += RegisterAutoMiss;
+            hihatZone.OnAutoMiss += RegisterAutoMiss;
+        }
+
+        private void OnDisable()
+        {
+            kickZone.OnAutoMiss -= RegisterAutoMiss;
+            snareZone.OnAutoMiss -= RegisterAutoMiss;
+            hihatZone.OnAutoMiss -= RegisterAutoMiss;
+        }
 
         public void PressKick() => TryHit(kickZone, DrumLane.Kick);
         public void PressSnare() => TryHit(snareZone, DrumLane.Snare);
@@ -41,20 +55,18 @@ namespace PeterDrummer.InputSystem
 
             double now = conductor.CurrentSongTimeSec;
             NoteObject note = zone.GetClosest(now);
-
             if (note == null)
             {
-                OnHitFeedback?.Invoke("MISS");
+                EmitJudgement(lane, HitJudgement.Miss, -1d);
                 return;
             }
 
             double error = Math.Abs(note.TargetSongTimeSec - now);
-
             if (error <= perfectWindowSec)
             {
                 zone.Remove(note);
                 Destroy(note.gameObject);
-                OnHitFeedback?.Invoke("PERFECT");
+                EmitJudgement(lane, HitJudgement.Perfect, error * 1000d);
                 return;
             }
 
@@ -62,11 +74,21 @@ namespace PeterDrummer.InputSystem
             {
                 zone.Remove(note);
                 Destroy(note.gameObject);
-                OnHitFeedback?.Invoke("GOOD");
+                EmitJudgement(lane, HitJudgement.Good, error * 1000d);
                 return;
             }
 
-            OnHitFeedback?.Invoke("MISS");
+            EmitJudgement(lane, HitJudgement.Miss, error * 1000d);
+        }
+
+        private void RegisterAutoMiss(DrumLane lane)
+        {
+            EmitJudgement(lane, HitJudgement.Miss, -1d);
+        }
+
+        private void EmitJudgement(DrumLane lane, HitJudgement judgement, double errorMs)
+        {
+            OnJudgement?.Invoke(lane, judgement, errorMs);
         }
     }
 }

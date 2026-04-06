@@ -39,13 +39,11 @@ namespace PeterDrummer.Rhythm
 
             double songNow = conductor.CurrentSongTimeSec;
 
-            // Condição de spawn precisa:
-            // event.TimeSec - songNow <= TravelTime => nota tem que nascer agora.
+            // event.TimeSec - songNow <= TravelTime => nota deve nascer agora.
             while (_nextIndex < _events.Count)
             {
                 BeatEvent evt = _events[_nextIndex];
-                double dt = evt.TimeSec - songNow;
-                if (dt > TravelTimeSec) break;
+                if (evt.TimeSec - songNow > TravelTimeSec) break;
 
                 Spawn(evt);
                 _nextIndex++;
@@ -62,15 +60,10 @@ namespace PeterDrummer.Rhythm
             };
 
             NoteObject note = Instantiate(prefab, spawnPoint.position, Quaternion.identity, transform);
-
-            // Momento DSP em que esta nota foi instanciada (referência para animação da posição).
-            double spawnDsp = AudioSettings.dspTime;
-
             note.Initialize(
                 evt.Lane,
                 evt.TimeSec,
                 conductor,
-                spawnDsp,
                 spawnPoint.position.x,
                 hitPoint.position.x,
                 scrollSpeedUnitsPerSec);

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using PeterDrummer.Core;
 using PeterDrummer.Data;
 using PeterDrummer.Rhythm;
 using UnityEngine;
@@ -7,9 +9,12 @@ namespace PeterDrummer.InputSystem
 {
     public class HitZone : MonoBehaviour
     {
+        [SerializeField] private SongConductor conductor;
         [SerializeField] private DrumLane lane;
+
         private readonly List<NoteObject> _inside = new();
 
+        public event Action<DrumLane> OnAutoMiss;
         public DrumLane Lane => lane;
 
         public NoteObject GetClosest(double songTimeSec)
@@ -20,13 +25,14 @@ namespace PeterDrummer.InputSystem
             foreach (NoteObject note in _inside)
             {
                 if (note == null) continue;
-                double err = System.Math.Abs(note.TargetSongTimeSec - songTimeSec);
+                double err = Math.Abs(note.TargetSongTimeSec - songTimeSec);
                 if (err < bestAbs)
                 {
                     bestAbs = err;
                     best = note;
                 }
             }
+
             return best;
         }
 
@@ -40,9 +46,16 @@ namespace PeterDrummer.InputSystem
 
         private void OnTriggerExit2D(Collider2D other)
         {
-            if (other.TryGetComponent(out NoteObject note))
+            if (!other.TryGetComponent(out NoteObject note)) return;
+            if (!_inside.Remove(note)) return;
+
+            if (conductor == null || !conductor.IsPlaying) return;
+            if (note.Lane != lane) return;
+
+            // Nota passou da zona sem hit => MISS automático.
+            if (conductor.CurrentSongTimeSec > note.TargetSongTimeSec)
             {
-                _inside.Remove(note);
+                OnAutoMiss?.Invoke(lane);
             }
         }
 

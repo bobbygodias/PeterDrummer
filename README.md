@@ -25,6 +25,7 @@ Scripts criados em `Unity/Assets/Scripts`:
 
 - `Core/GameFlowController.cs`
 - `Core/SongConductor.cs`
+- `Core/ScoreSystem.cs`
 - `Audio/AudioImportService.cs`
 - `Audio/RuntimeAudioLoader.cs`
 - `Audio/AudioAnalyzer.cs`
@@ -33,6 +34,7 @@ Scripts criados em `Unity/Assets/Scripts`:
 - `Input/PlayerInputController.cs`
 - `Input/HitZone.cs`
 - `Visual/CharacterVisualController.cs`
+- `Visual/HudFeedbackController.cs`
 - `Data/RhythmTypes.cs`
 
 Detalhes de arquitetura e matemática de sincronização:
@@ -47,8 +49,9 @@ Detalhes de arquitetura e matemática de sincronização:
 3. Analisador detecta batidas por bandas de frequência.
 4. `NoteSpawner` cria notas com antecedência calculada por distância/velocidade.
 5. `SongConductor` usa `AudioSettings.dspTime` para relógio global.
-6. Input detecta acerto/erro na zona de hit.
+6. Input detecta acerto/erro na zona de hit (incluindo miss automático quando a nota passa).
 7. Evento de input dispara animação do personagem na parte superior.
+8. `ScoreSystem` acumula pontos, combo e julgamento em tempo real no HUD.
 
 ---
 
@@ -61,6 +64,6 @@ Detalhes de arquitetura e matemática de sincronização:
 
 ## 🚀 Próximos passos recomendados
 - Ajuste fino de thresholds do analisador por música.
-- Sistema de pontuação/combos.
+- Melhorar curva de pontuação e multiplicadores.
 - Quantização opcional por BPM estimado.
 - Tela de resultados e ranking local.

@@ -5,6 +5,7 @@
 - **Core**
   - `GameFlowController`: fluxo principal do jogo.
   - `SongConductor`: relógio DSP e controle de playback.
+  - `ScoreSystem`: pontuação, combo e último julgamento.
 - **Audio**
   - `AudioImportService`: integração com seletor nativo Android.
   - `RuntimeAudioLoader`: carrega MP3/WAV em `AudioClip`.
@@ -17,6 +18,7 @@
   - `HitZone`: zona de acerto por lane (Kick/Snare/HiHat).
 - **Visual**
   - `CharacterVisualController`: anima personagem em eventos de input.
+  - `HudFeedbackController`: atualiza score/combo/judgement na UI.
 - **Data**
   - `DrumLane` e `BeatEvent`: tipos compartilhados.
 
@@ -38,16 +40,15 @@ No frame atual, com tempo da música `songNow`:
 
 Assim, a nota nasce com antecedência exatamente igual ao tempo de deslocamento.
 
-### Posição da nota baseada em DSP
-Para reduzir drift por FPS:
+### Posição da nota baseada no tempo absoluto da música
+Para reduzir drift por FPS e jitter de frame:
 
-- No spawn, salvar `dspSpawn = AudioSettings.dspTime`
 - Em cada `Update`:
-  - `elapsed = AudioSettings.dspTime - dspSpawn`
-  - `alpha = clamp01(elapsed / travelTime)`
-  - `x = lerp(x_spawn, x_hit, alpha)`
+  - `songNow = conductor.CurrentSongTimeSec`
+  - `remaining = T_event - songNow`
+  - `x = x_hit + remaining * v * sign(x_spawn - x_hit)`
 
-> Resultado: a posição da nota segue o relógio de áudio, não o delta de frame.
+> Resultado: quando `songNow == T_event`, a nota cruza exatamente a zona de acerto.
 
 ## 3) Mapeamento de lanes sugerido
 - **Kick**: graves (40–180 Hz)

@@ -1,25 +1,25 @@
-using PeterDrummer.Data;
 using PeterDrummer.Core;
+using PeterDrummer.Data;
 using UnityEngine;
 
 namespace PeterDrummer.Rhythm
 {
     public class NoteObject : MonoBehaviour
     {
+        [SerializeField] private double autoDespawnAfterHitSec = 0.2d;
+
         public DrumLane Lane { get; private set; }
         public double TargetSongTimeSec { get; private set; }
 
         private SongConductor _conductor;
-        private double _spawnDspTime;
-        private float _spawnX;
         private float _hitX;
-        private float _travelTimeSec;
+        private float _directionSign;
+        private float _scrollSpeed;
 
         public void Initialize(
             DrumLane lane,
             double targetSongTimeSec,
             SongConductor conductor,
-            double spawnDspTime,
             float spawnX,
             float hitX,
             float scrollSpeed)
@@ -27,23 +27,29 @@ namespace PeterDrummer.Rhythm
             Lane = lane;
             TargetSongTimeSec = targetSongTimeSec;
             _conductor = conductor;
-            _spawnDspTime = spawnDspTime;
-            _spawnX = spawnX;
             _hitX = hitX;
-            _travelTimeSec = Mathf.Abs(spawnX - hitX) / scrollSpeed;
+            _scrollSpeed = scrollSpeed;
+            _directionSign = Mathf.Sign(spawnX - hitX);
         }
 
         private void Update()
         {
             if (_conductor == null || !_conductor.IsPlaying) return;
 
-            double elapsed = AudioSettings.dspTime - _spawnDspTime;
-            float alpha = Mathf.Clamp01((float)(elapsed / _travelTimeSec));
-            float x = Mathf.Lerp(_spawnX, _hitX, alpha);
+            // Posição absoluta pela diferença entre o tempo atual da música e o tempo alvo da nota.
+            // Quando now == target, a nota está exatamente no hitX.
+            double now = _conductor.CurrentSongTimeSec;
+            double remaining = TargetSongTimeSec - now;
+            float x = _hitX + (float)(remaining * _scrollSpeed * _directionSign);
 
             Vector3 pos = transform.position;
             pos.x = x;
             transform.position = pos;
+
+            if (now > TargetSongTimeSec + autoDespawnAfterHitSec)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }
