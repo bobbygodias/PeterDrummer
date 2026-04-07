@@ -4,12 +4,11 @@ Toque bateria no ritmo da sua própria música no Android (celular, tablet ou TV
 ## 📦 Baixar APK (Android 9+)
 > **Link direto (primeira página do repositório):**
 
-➡️ **[Download PeterDrummer.apk](https://github.com/<SEU_USUARIO>/<SEU_REPO>/releases/latest/download/PeterDrummer.apk)**
+➡️ **[Download PeterDrummer.apk](https://github.com/bobbygodias/PeterDrummer/releases/latest/download/PeterDrummer.apk)**
 
 > Troque `<SEU_USUARIO>/<SEU_REPO>` pelo caminho real do seu GitHub. O arquivo APK deve ser publicado em **Releases** com exatamente o nome `PeterDrummer.apk`.
 
 ---
-
 
 ## 🎬 Vídeo de introdução (10s)
 - Link enviado: **https://drive.google.com/file/d/128ZM10Tj9-PjYlbRDdSzx1X6bHDDiV5T/view?usp=sharing**
