@@ -12,6 +12,15 @@ Toque bateria no ritmo da sua própria música no Android (celular, tablet ou TV
 
 
 
+## 📚 Pacotão de código (arquivo único)
+Se você quiser tudo consolidado em um arquivo só, use:
+
+- `Docs/Pacotao-Codigo.md`
+
+Esse arquivo contém os scripts principais + docs + workflow de build APK em formato único para leitura/backup.
+
+---
+
 ## 🤖 Build APK pelo GitHub (tablet-friendly)
 Sem computador, você consegue gerar APK direto pelo GitHub Actions:
 
