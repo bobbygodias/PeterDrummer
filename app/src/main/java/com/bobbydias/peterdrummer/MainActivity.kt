@@ -46,6 +46,7 @@ class MainActivity : Activity() {
         rankingStore = RankingStore(this)
         samplePlayer.volume = settingsStore.drumVolume
         showIntroOrHome()
+        window.decorView.post(samplePlayer::startLoading)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -59,20 +60,8 @@ class MainActivity : Activity() {
     }
 
     private fun showIntroOrHome() {
-        val introId = resources.getIdentifier("peter_drummer_intro", "raw", packageName)
-        val introUri = if (introId != 0) {
-            Uri.parse("android.resource://$packageName/$introId")
-        } else {
-            privateIntroFile()?.let(Uri::fromFile)
-        }
-        if (introUri == null) {
-            showHome()
-            return
-        }
-
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         val video = VideoView(this).apply {
-            setVideoURI(introUri)
             setOnPreparedListener { player ->
                 player.isLooping = false
                 start()
@@ -103,6 +92,24 @@ class MainActivity : Activity() {
             showHome()
         }
         setContentView(root)
+
+        // Resolve/copy private media only after Android has received the first
+        // real view. A missing or unreadable intro must fall back to Home.
+        root.post {
+            runCatching {
+                val introId = resources.getIdentifier("peter_drummer_intro", "raw", packageName)
+                val introUri = if (introId != 0) {
+                    Uri.parse("android.resource://$packageName/$introId")
+                } else {
+                    privateIntroFile()?.let(Uri::fromFile)
+                }
+                if (introUri == null) {
+                    showHome()
+                } else {
+                    video.setVideoURI(introUri)
+                }
+            }.onFailure { showHome() }
+        }
     }
 
     private fun privateIntroFile(): File? = runCatching {
