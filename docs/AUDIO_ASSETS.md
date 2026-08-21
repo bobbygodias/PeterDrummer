@@ -4,14 +4,14 @@ Colocar em `app/src/main/res/raw/`:
 
 | Recurso | Peça |
 |---|---|
-| `drum_kick.wav` | Bumbo |
-| `drum_snare.wav` | Caixa |
 | `drum_hihat.wav` | Chimbal |
-| `drum_tom_high.wav` | Tom agudo |
-| `drum_tom_mid.wav` | Tom médio |
-| `drum_floor_tom.wav` | Surdo |
-| `drum_crash.wav` | Crash |
+| `drum_crash.wav` | Prato de ataque |
 | `drum_ride.wav` | Prato de condução |
+| `drum_snare.wav` | Snare / caixa |
+| `drum_tom_high.wav` | Tom 1 |
+| `drum_tom_mid.wav` | Tom 2 |
+| `drum_floor_tom.wav` | Surdo |
+| `drum_kick.wav` | Bumbo |
 
 ## Alvo sonoro
 

@@ -30,10 +30,10 @@ class RhythmGameView(
     private val pressedUntil = LongArray(DrumLane.entries.size)
     private val autoTriggered = BooleanArray(chart.events.size)
     private val resolvedEvents = mutableSetOf<RhythmEvent>()
+    private val peterPerformance = PeterPerformanceState()
     private var startUptimeMs = 0L
     private var finished = false
     private var lastJudgement: HitJudgement? = null
-    private var lastCueLane: DrumLane? = null
     private var lastFeedbackUntil = 0L
 
     private val approachTimeMs = 3_200L
@@ -60,7 +60,7 @@ class RhythmGameView(
         val now = SystemClock.uptimeMillis()
         val songTimeMs = (now - startUptimeMs).coerceAtLeast(0L)
         drawStage(canvas)
-        drawHeader(canvas)
+        drawHeader(canvas, now)
         drawTrack(canvas)
         triggerAutomaticEvents(songTimeMs)
         drawNotes(canvas, songTimeMs)
@@ -100,7 +100,7 @@ class RhythmGameView(
         canvas.drawPath(spotlight, paint)
     }
 
-    private fun drawHeader(canvas: Canvas) {
+    private fun drawHeader(canvas: Canvas, now: Long) {
         paint.textAlign = Paint.Align.CENTER
         paint.typeface = android.graphics.Typeface.DEFAULT_BOLD
         paint.color = 0xFFF2E9DD.toInt()
@@ -111,11 +111,12 @@ class RhythmGameView(
         paint.textSize = height * 0.017f
         canvas.drawText(chart.artist, width / 2f, height * 0.078f, paint)
 
-        lastCueLane?.let { lane ->
+        peterPerformance.activeLanes(now).takeIf { it.isNotEmpty() }?.let { lanes ->
             paint.typeface = android.graphics.Typeface.DEFAULT_BOLD
-            paint.color = lane.colorArgb
+            paint.color = lanes.last().colorArgb
             paint.textSize = height * 0.021f
-            canvas.drawText("Peter: ${lane.displayName}", width / 2f, height * 0.235f, paint)
+            val pieces = lanes.joinToString(" + ") { it.displayName }
+            canvas.drawText("Peter toca: $pieces", width / 2f, height * 0.235f, paint)
         }
     }
 
@@ -288,7 +289,7 @@ class RhythmGameView(
     private fun showLaneFeedback(lane: DrumLane, judgement: HitJudgement) {
         val now = SystemClock.uptimeMillis()
         pressedUntil[lane.index] = now + 95L
-        lastCueLane = lane
+        peterPerformance.strike(lane, now)
         lastJudgement = judgement
         lastFeedbackUntil = now + 420L
         invalidate()

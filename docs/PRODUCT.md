@@ -50,8 +50,13 @@
 - Uma linha de preparação fica aproximadamente em 60% da altura útil.
 - A zona real de acerto fica perto dos alvos, aproximadamente em 82%.
 - Essa separação reserva cerca de 1,3 s de antecipação no protótipo atual.
-- Oito peças: bumbo, caixa, chimbal, dois tons, surdo, crash e ride.
+- Ordem canônica das oito peças: chimbal, prato de ataque, prato de condução,
+  snare, tom 1, tom 2, surdo e bumbo.
 - Batidas simultâneas são eventos independentes alinhados no mesmo instante.
+- Nos modos jogáveis, Peter anima a peça realmente tocada pelo usuário, mesmo
+  quando o toque estiver errado para a partitura; sem toque, não há golpe.
+- No modo automático, a própria partitura conduz os golpes de Peter.
+- Toques simultâneos combinam braços e pedal numa única pose composta.
 
 ## Condição de pronto da v0.1
 

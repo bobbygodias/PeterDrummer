@@ -56,3 +56,7 @@ e posição exatas.
 Peter será um asset separado com estados para as oito peças. A partitura conduz
 as animações no modo automático; o toque real do jogador as conduz nos modos
 jogáveis.
+
+`PeterPerformanceState` mantém cada peça ativa de forma independente por uma
+janela curta. Assim, dois braços e o pedal podem compor o mesmo quadro quando
+as batidas acontecem juntas; o último evento não apaga os anteriores.
