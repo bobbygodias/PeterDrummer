@@ -6,10 +6,20 @@ import android.net.Uri
 class SongFolderStore(context: Context) {
     private val preferences = context.getSharedPreferences("peter_drummer_settings", Context.MODE_PRIVATE)
 
-    var folderUri: Uri?
-        get() = preferences.getString(KEY_FOLDER_URI, null)?.let(Uri::parse)
+    var songFolderUri: Uri?
+        get() = preferences.getString(KEY_SONG_FOLDER_URI, null)?.let(Uri::parse)
+            ?: preferences.getString(LEGACY_FOLDER_URI, null)?.let(Uri::parse)
         set(value) {
-            preferences.edit().putString(KEY_FOLDER_URI, value?.toString()).apply()
+            preferences.edit()
+                .putString(KEY_SONG_FOLDER_URI, value?.toString())
+                .remove(LEGACY_FOLDER_URI)
+                .commit()
+        }
+
+    var chartFolderUri: Uri?
+        get() = preferences.getString(KEY_CHART_FOLDER_URI, null)?.let(Uri::parse)
+        set(value) {
+            preferences.edit().putString(KEY_CHART_FOLDER_URI, value?.toString()).commit()
         }
 
     var songVolume: Float
@@ -21,7 +31,9 @@ class SongFolderStore(context: Context) {
         set(value) = preferences.edit().putFloat(KEY_DRUM_VOLUME, value.coerceIn(0f, 1f)).apply()
 
     companion object {
-        private const val KEY_FOLDER_URI = "song_folder_uri"
+        private const val LEGACY_FOLDER_URI = "song_folder_uri"
+        private const val KEY_SONG_FOLDER_URI = "music_library_tree_uri_v2"
+        private const val KEY_CHART_FOLDER_URI = "chart_library_tree_uri_v2"
         private const val KEY_SONG_VOLUME = "song_volume"
         private const val KEY_DRUM_VOLUME = "drum_volume"
     }

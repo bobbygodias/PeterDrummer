@@ -13,8 +13,7 @@
 
 - estrutura Gradle;
 - oito pistas fixas;
-- ordem canônica: chimbal, prato de ataque, prato de condução, snare, tom 1,
-  tom 2, surdo e bumbo;
+- ordem canônica: caixa, tom 1, tom 2, surdo, bumbo, chimbal, crash e ride;
 - tela de pista responsiva e multitouch;
 - estado de performance do Peter preparado para golpes simultâneos;
 - partitura temporal de calibração;
@@ -24,12 +23,16 @@
 - catálogo público preparado para chimbal aberto e pedal;
 - seleção por intensidade e round-robin;
 - esqueleto temporal de **Even Flow** documentado e testado.
+- duas pastas SAF independentes: músicas e partituras extras;
+- catálogo unificado para partituras internas/externas e os três modos;
+- dificuldade e aproximação visual derivadas da partitura.
 
 ## Ainda não foi validado
 
 - build Android no GitHub Actions: testes e `assembleDebug` passaram;
 - execução local nesta sessão: indisponível por ausência de SDK/Gradle;
-- execução em emulador ou aparelho;
+- execução da v0.2.3 em tablet revelou e reproduziu a antiga ordem incorreta;
+- persistência das duas pastas e a nova ordem da v0.3 ainda aguardam novo APK;
 - geração do APK pessoal com os assets privados;
 - reprodução e latência dos samples em aparelho;
 - backing track externo sincronizado;
@@ -39,6 +42,6 @@
 
 ## Próxima ação técnica
 
-Executar testes e `assembleDebug` do motor público no GitHub. Para montar o
-APK pessoal audível, injetar os assets privados fora do repositório e então
-medir carregamento, multitouch, resposta sonora e latência.
+Executar testes e `assembleDebug` da v0.3 no GitHub. Depois, montar o APK
+pessoal com os assets privados e validar no mesmo tablet: oito sons na ordem,
+permanência das duas pastas, pareamento música/partitura e os três modos.

@@ -3,9 +3,9 @@
 Jogo rítmico Android feito para Peter tocar bateria sobre faixas **drumless**
 guardadas no próprio aparelho.
 
-> Estado atual: piloto audível v0.2 em construção. Ainda não existe um APK
-> validado em aparelho, mas testes unitários e `assembleDebug` passam no
-> GitHub Actions.
+> Estado atual: catálogo e contrato de pistas da v0.3 em validação. A v0.2.3
+> já foi executada em tablet e revelou os ajustes de ordem, áudio e persistência
+> que esta versão corrige.
 
 ## O que torna este jogo diferente
 
@@ -20,14 +20,14 @@ guardadas no próprio aparelho.
 
 | Índice | Peça |
 |---:|---|
-| 0 | Chimbal |
-| 1 | Prato de ataque / crash |
-| 2 | Prato de condução / ride |
-| 3 | Snare / caixa |
-| 4 | Tom 1 |
-| 5 | Tom 2 |
-| 6 | Surdo |
-| 7 | Bumbo |
+| 0 | Snare / caixa |
+| 1 | Tom 1 |
+| 2 | Tom 2 |
+| 3 | Surdo |
+| 4 | Bumbo |
+| 5 | Chimbal |
+| 6 | Prato de ataque / crash |
+| 7 | Prato de condução / ride |
 
 Os índices fazem parte do formato das partituras e não devem ser reordenados
 depois que os mapas forem publicados.
@@ -38,7 +38,9 @@ depois que os mapas forem publicados.
 - interface vertical e offline;
 - intro opcional antes do menu;
 - menu com os três modos definidos para o produto;
-- seleção persistente da pasta externa;
+- seleção persistente e separada das pastas de músicas e partituras extras;
+- leitura de partituras internas empacotadas e extras `.pdrum.json`;
+- dificuldade e velocidade visual calculadas a partir de cada partitura;
 - volumes independentes de música e bateria;
 - pista em perspectiva com exatamente oito linhas e oito botões;
 - linha de preparação separada da zona real de acerto;
@@ -86,6 +88,7 @@ produzir ou verificar.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): decisões técnicas e relógio.
 - [`docs/AUDIO_ASSETS.md`](docs/AUDIO_ASSETS.md): contrato dos samples.
 - [`docs/EVEN_FLOW_PILOT.md`](docs/EVEN_FLOW_PILOT.md): faixa-laboratório.
+- [`docs/CHART_FORMAT.md`](docs/CHART_FORMAT.md): formato das partituras extras.
 - [`docs/CONTINUITY.md`](docs/CONTINUITY.md): estado verificável para retomada.
 
 ## Conteúdo externo

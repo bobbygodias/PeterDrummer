@@ -28,4 +28,32 @@ class DrumSampleCatalogTest {
         )
         assertTrue(paths.all { it.startsWith("drums/") && it.endsWith(".opus") })
     }
+
+    @Test
+    fun eachCanonicalButtonResolvesToItsOwnSampleFamily() {
+        val strongestStandard = DrumLane.entries.map { lane ->
+            val articulation = DrumSampleCatalog.effectiveArticulation(
+                lane,
+                DrumArticulation.STANDARD,
+            )
+            val layer = DrumSampleCatalog.layerCount(lane, articulation)
+            DrumSampleCatalog.assetPath(
+                DrumSampleKey(lane, layer, 1, articulation),
+            )
+        }
+
+        assertEquals(
+            listOf(
+                "drums/snare/l6_v1.opus",
+                "drums/tom1/l5_v1.opus",
+                "drums/tom2/l5_v1.opus",
+                "drums/tom3/l5_v1.opus",
+                "drums/kick/l6_v1.opus",
+                "drums/hihat/closed/l5_v1.opus",
+                "drums/crash/l5_v1.opus",
+                "drums/ride/l5_v1.opus",
+            ),
+            strongestStandard,
+        )
+    }
 }

@@ -20,6 +20,7 @@ data class RhythmChart(
     val artist: String,
     val durationMs: Long,
     val audioOffsetMs: Long = 0L,
+    val audioFileNames: List<String> = emptyList(),
     val events: List<RhythmEvent>,
 )
 
@@ -30,6 +31,7 @@ object ChartValidator {
         val problems = mutableListOf<ChartProblem>()
         if (chart.id.isBlank()) problems += ChartProblem(null, "Chart id is blank")
         if (chart.durationMs <= 0L) problems += ChartProblem(null, "Duration must be positive")
+        if (chart.events.isEmpty()) problems += ChartProblem(null, "Chart has no drum events")
 
         var previousTime = Long.MIN_VALUE
         val seenLaneAtTime = mutableSetOf<Pair<Long, DrumLane>>()

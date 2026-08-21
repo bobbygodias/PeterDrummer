@@ -8,30 +8,34 @@ class DrumLaneContractTest {
     fun canonicalKitHasExactlyEightPiecesInTheApprovedOrder() {
         assertEquals(
             listOf(
-                DrumLane.HI_HAT,
-                DrumLane.CRASH,
-                DrumLane.RIDE,
                 DrumLane.SNARE,
                 DrumLane.HIGH_TOM,
                 DrumLane.MID_TOM,
                 DrumLane.FLOOR_TOM,
                 DrumLane.KICK,
+                DrumLane.HI_HAT,
+                DrumLane.CRASH,
+                DrumLane.RIDE,
             ),
             DrumLane.entries,
         )
         assertEquals((0..7).toList(), DrumLane.entries.map(DrumLane::index))
         assertEquals(
             listOf(
-                "Chimbal",
-                "Prato de ataque",
-                "Prato de condução",
-                "Snare",
+                "Caixa",
                 "Tom 1",
                 "Tom 2",
                 "Surdo",
                 "Bumbo",
+                "Chimbal",
+                "Prato de ataque",
+                "Prato de condução",
             ),
             DrumLane.entries.map(DrumLane::displayName),
+        )
+        assertEquals(
+            listOf("snare", "tom1", "tom2", "floor_tom", "kick", "hi_hat", "crash", "ride"),
+            DrumLane.entries.map(DrumLane::chartId),
         )
     }
 }

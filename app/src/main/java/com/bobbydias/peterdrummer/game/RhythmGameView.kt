@@ -12,6 +12,7 @@ import android.view.MotionEvent
 import android.view.View
 import com.bobbydias.peterdrummer.core.DrumLane
 import com.bobbydias.peterdrummer.core.DrumArticulation
+import com.bobbydias.peterdrummer.core.ChartDifficultyAnalyzer
 import com.bobbydias.peterdrummer.core.GameMode
 import com.bobbydias.peterdrummer.core.HitJudgement
 import com.bobbydias.peterdrummer.core.JudgementEngine
@@ -23,6 +24,7 @@ class RhythmGameView(
     context: Context,
     private val chart: RhythmChart,
     private val mode: GameMode,
+    private val onSongStart: () -> Unit = {},
     private val onDrumHit: (DrumLane, Int, DrumArticulation) -> Unit,
     private val onFinished: (PlayResult) -> Unit,
 ) : View(context) {
@@ -34,10 +36,12 @@ class RhythmGameView(
     private val peterPerformance = PeterPerformanceState()
     private var startUptimeMs = 0L
     private var finished = false
+    private var songStarted = false
     private var lastJudgement: HitJudgement? = null
     private var lastFeedbackUntil = 0L
 
-    private val approachTimeMs = 3_200L
+    private val difficulty = ChartDifficultyAnalyzer.analyze(chart)
+    private val approachTimeMs = difficulty.approachTimeMs
     private val preparationProgress = 0.58f
     private val spawnYRatio = 0.30f
     private val hitYRatio = 0.82f
@@ -52,7 +56,14 @@ class RhythmGameView(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        startUptimeMs = SystemClock.uptimeMillis() + 650L
+        val leadInMs = 650L
+        startUptimeMs = SystemClock.uptimeMillis() + leadInMs
+        postDelayed({
+            if (isAttachedToWindow && !finished && !songStarted) {
+                songStarted = true
+                onSongStart()
+            }
+        }, leadInMs)
         postInvalidateOnAnimation()
     }
 
@@ -111,6 +122,13 @@ class RhythmGameView(
         paint.color = 0xFFB9A898.toInt()
         paint.textSize = height * 0.017f
         canvas.drawText(chart.artist, width / 2f, height * 0.078f, paint)
+        paint.textSize = height * 0.0125f
+        canvas.drawText(
+            "NÍVEL ${difficulty.level} • ${difficulty.label}",
+            width / 2f,
+            height * 0.101f,
+            paint,
+        )
 
         peterPerformance.activeLanes(now).takeIf { it.isNotEmpty() }?.let { lanes ->
             paint.typeface = android.graphics.Typeface.DEFAULT_BOLD
@@ -233,7 +251,24 @@ class RhythmGameView(
             canvas.drawCircle(centerX, buttonY, radius * 0.62f, paint)
             paint.color = lane.colorArgb
             canvas.drawCircle(centerX, buttonY, radius * 0.48f, paint)
+
+            paint.textAlign = Paint.Align.CENTER
+            paint.typeface = android.graphics.Typeface.DEFAULT_BOLD
+            paint.textSize = (height * 0.0095f).coerceAtLeast(11f)
+            paint.color = 0xFFF2E9DD.toInt()
+            canvas.drawText(buttonLabel(lane), centerX, buttonY - radius - 10f, paint)
         }
+    }
+
+    private fun buttonLabel(lane: DrumLane): String = when (lane) {
+        DrumLane.SNARE -> "CAIXA"
+        DrumLane.HIGH_TOM -> "TOM 1"
+        DrumLane.MID_TOM -> "TOM 2"
+        DrumLane.FLOOR_TOM -> "SURDO"
+        DrumLane.KICK -> "BUMBO"
+        DrumLane.HI_HAT -> "CHIMBAL"
+        DrumLane.CRASH -> "CRASH"
+        DrumLane.RIDE -> "RIDE"
     }
 
     private fun drawFeedback(canvas: Canvas, now: Long) {

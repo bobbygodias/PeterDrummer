@@ -45,9 +45,22 @@ precisará de calibração explícita devido à latência variável.
 
 - Pasta das músicas: Storage Access Framework com permissão persistente de
   leitura; nenhuma permissão ampla de armazenamento.
+- Pasta de partituras extras: segunda árvore SAF independente, também com
+  permissão persistente de leitura.
 - Configurações: `SharedPreferences` no protótipo.
 - Ranking: JSON local em `SharedPreferences`, ordenado e limitado a cinco.
-- Futuro catálogo: arquivo empacotado + associações locais entre `songId` e URI.
+- Catálogo: partitura interna em `assets/charts`, partitura extra
+  `.pdrum.json` e associação com música externa por nomes declarados.
+
+## Catálogo e dificuldade
+
+`ChartLibrary` reúne as partituras internas e extras, ignora IDs repetidos e
+marca as que ainda não encontraram sua música. Aleatório, escolha manual e
+demonstração consomem a mesma `RhythmChart`; apenas a origem dos golpes muda.
+
+`ChartDifficultyAnalyzer` usa notas por minuto, pico de notas em dois segundos
+e maior acorde. O nível resultante escolhe o tempo de aproximação visual. O
+andamento real continua sendo o tempo absoluto de cada evento da partitura.
 
 ## Arte e animação
 
