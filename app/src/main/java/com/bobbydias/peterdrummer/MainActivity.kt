@@ -29,6 +29,7 @@ import com.bobbydias.peterdrummer.game.DemoChart
 import com.bobbydias.peterdrummer.game.RhythmGameView
 import com.bobbydias.peterdrummer.storage.RankingStore
 import com.bobbydias.peterdrummer.storage.SongFolderStore
+import java.io.File
 
 class MainActivity : Activity() {
     private lateinit var samplePlayer: DrumSamplePlayer
@@ -59,14 +60,19 @@ class MainActivity : Activity() {
 
     private fun showIntroOrHome() {
         val introId = resources.getIdentifier("peter_drummer_intro", "raw", packageName)
-        if (introId == 0) {
+        val introUri = if (introId != 0) {
+            Uri.parse("android.resource://$packageName/$introId")
+        } else {
+            privateIntroFile()?.let(Uri::fromFile)
+        }
+        if (introUri == null) {
             showHome()
             return
         }
 
         val root = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
         val video = VideoView(this).apply {
-            setVideoURI(Uri.parse("android.resource://$packageName/$introId"))
+            setVideoURI(introUri)
             setOnPreparedListener { player ->
                 player.isLooping = false
                 start()
@@ -98,6 +104,14 @@ class MainActivity : Activity() {
         }
         setContentView(root)
     }
+
+    private fun privateIntroFile(): File? = runCatching {
+        val destination = File(cacheDir, PRIVATE_INTRO_FILENAME)
+        assets.open(PRIVATE_INTRO_ASSET).use { input ->
+            destination.outputStream().use(input::copyTo)
+        }
+        destination
+    }.getOrNull()
 
     private fun showHome() {
         val content = centeredColumn()
@@ -370,6 +384,8 @@ class MainActivity : Activity() {
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
     companion object {
+        private const val PRIVATE_INTRO_ASSET = "private/peter_drummer_intro.mp4"
+        private const val PRIVATE_INTRO_FILENAME = "peter_drummer_intro.mp4"
         private const val REQUEST_SONG_FOLDER = 1701
         private const val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
         private const val WRAP = ViewGroup.LayoutParams.WRAP_CONTENT
