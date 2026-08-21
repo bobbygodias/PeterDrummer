@@ -2,7 +2,6 @@ package com.bobbydias.peterdrummer
 
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -35,22 +34,13 @@ import java.io.File
 
 class MainActivity : Activity() {
     private var samplePlayer: DrumSamplePlayer? = null
-    private lateinit var settingsStore: SongFolderStore
-    private lateinit var rankingStore: RankingStore
+    private val settingsStore by lazy { SongFolderStore(this) }
+    private val rankingStore by lazy { RankingStore(this) }
     private var latestResult: PlayResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        makeImmersive()
-        settingsStore = SongFolderStore(this)
-        rankingStore = RankingStore(this)
         showDiagnosticGate()
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) makeImmersive()
     }
 
     override fun onDestroy() {
