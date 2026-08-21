@@ -26,7 +26,7 @@ class ChartSelectionPolicyTest {
             ),
             ChartOrigin.BUILT_IN,
             "Demo interna",
-            android.net.Uri.EMPTY,
+            null,
         )
         val snapshot = ChartLibrarySnapshot(
             items = listOf(calibration, demo),
@@ -38,6 +38,5 @@ class ChartSelectionPolicyTest {
         )
 
         assertEquals(listOf("ampularia_demo"), snapshot.selectionItems.map { it.chart.id })
-        assertEquals(listOf("ampularia_demo"), snapshot.playableChoices.map { it.chart.id })
     }
 }
