@@ -72,12 +72,13 @@ Requisitos previstos:
 - Kotlin 2.4.10.
 
 ```bash
-./gradlew test
-./gradlew assembleDebug
+gradle test
+gradle assembleDebug
 ```
 
-O wrapper binário e o SDK Android ainda precisam ser gerados/instalados antes
-do primeiro build limpo.
+O CI usa Gradle 8.13 diretamente. O wrapper binário será gerado depois do
+primeiro build validado, evitando publicar um JAR que esta sessão não conseguiu
+produzir ou verificar.
 
 ## Documentação
 

@@ -32,6 +32,6 @@
 
 ## Próxima ação técnica
 
-Gerar o wrapper binário em um ambiente com Gradle 8.13, adicionar a intro e os
-oito WAVs, executar `./gradlew test assembleDebug` e instalar o APK no aparelho
-alvo para medir toque e latência.
+Executar o workflow Android com Gradle 8.13, gerar o wrapper binário após essa
+validação, adicionar a intro e os oito WAVs e instalar o APK no aparelho alvo
+para medir toque e latência.
