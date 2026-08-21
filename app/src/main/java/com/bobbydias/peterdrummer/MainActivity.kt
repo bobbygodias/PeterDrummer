@@ -78,7 +78,9 @@ class MainActivity : Activity() {
                 true
             }
         }
-        root.addView(video, FrameLayout.LayoutParams(MATCH, WRAP, Gravity.CENTER))
+        // A full-screen container lets VideoView letterbox the landscape intro
+        // vertically instead of pinning its surface to the top of a tablet.
+        root.addView(video, FrameLayout.LayoutParams(MATCH, MATCH, Gravity.CENTER))
 
         val skip = TextView(this).apply {
             text = "Toque para pular"
@@ -184,12 +186,12 @@ class MainActivity : Activity() {
         content.addView(title("ESCOLHA AÊ, FERA", 30f))
         content.addView(space(20))
         content.addView(label(
-            "${snapshot.musicFileCount} músicas • ${snapshot.extraChartCount} partituras extras",
+            "${snapshot.playableChoices.size} pronta(s) para tocar • ${snapshot.musicFileCount} arquivo(s) na pasta",
             14f,
             muted = true,
         ))
         content.addView(space(20))
-        snapshot.items.forEach { item ->
+        snapshot.selectionItems.forEach { item ->
             val difficulty = ChartDifficultyAnalyzer.analyze(item.chart)
             content.addView(label("${item.chart.artist} — ${item.chart.title}", 18f))
             content.addView(label(
@@ -206,6 +208,26 @@ class MainActivity : Activity() {
             content.addView(button)
             content.addView(space(20))
         }
+        if (snapshot.unchartedSongs.isNotEmpty()) {
+            content.addView(space(8))
+            content.addView(title("AGUARDANDO PARTITURA", 22f))
+            content.addView(space(8))
+            content.addView(label(
+                "Estas músicas foram encontradas, mas ainda não podem ser avaliadas pelo jogo.",
+                13f,
+                muted = true,
+            ))
+            content.addView(space(18))
+            snapshot.unchartedSongs.forEach { song ->
+                content.addView(label(song.name.substringBeforeLast('.'), 16f))
+                val unavailable = actionButton("PARTITURA AINDA NÃO DISPONÍVEL") {}
+                unavailable.isEnabled = false
+                unavailable.alpha = 0.42f
+                content.addView(space(7))
+                content.addView(unavailable)
+                content.addView(space(14))
+            }
+        }
         snapshot.problems.firstOrNull()?.let {
             content.addView(label(it, 13f, muted = true))
             content.addView(space(12))
@@ -220,8 +242,7 @@ class MainActivity : Activity() {
     private fun startRandomChart(mode: GameMode) {
         showLoading("MONTANDO O PALCO")
         loadChartLibrary { snapshot ->
-            val choices = snapshot.playableItems.filterNot(ChartLibraryItem::isCalibration)
-                .ifEmpty { snapshot.playableItems }
+            val choices = snapshot.playableChoices
             choices.randomOrNull()?.let { startChart(it, mode) }
                 ?: showCatalogEmpty(snapshot)
         }

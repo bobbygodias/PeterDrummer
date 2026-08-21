@@ -7,6 +7,7 @@ import com.bobbydias.peterdrummer.game.DemoChart
 import com.bobbydias.peterdrummer.storage.DocumentTreeScanner
 import com.bobbydias.peterdrummer.storage.SongFolderStore
 import com.bobbydias.peterdrummer.storage.TreeDocument
+import java.io.File
 import java.text.Normalizer
 
 enum class ChartOrigin { BUILT_IN, EXTRA }
@@ -23,11 +24,17 @@ data class ChartLibraryItem(
 
 data class ChartLibrarySnapshot(
     val items: List<ChartLibraryItem>,
+    val unchartedSongs: List<TreeDocument>,
     val musicFileCount: Int,
+    val bundledMusicCount: Int,
     val extraChartCount: Int,
     val problems: List<String>,
 ) {
     val playableItems: List<ChartLibraryItem> get() = items.filter(ChartLibraryItem::canPlay)
+    val selectionItems: List<ChartLibraryItem>
+        get() = items.filterNot(ChartLibraryItem::isCalibration).ifEmpty { items }
+    val playableChoices: List<ChartLibraryItem>
+        get() = playableItems.filterNot(ChartLibraryItem::isCalibration).ifEmpty { playableItems }
 }
 
 class ChartLibrary(
@@ -42,21 +49,26 @@ class ChartLibrary(
         val charts = scanBuiltInCharts(problems).toMutableList()
         charts += scanExtraCharts(problems).map { it.first to (ChartOrigin.EXTRA to it.second) }
         val seenIds = mutableSetOf<String>()
+        val matchedExternalUris = mutableSetOf<Uri>()
         val items = charts.mapNotNull { (chart, originAndName) ->
             if (!seenIds.add(chart.id)) {
                 problems += "Partitura repetida ignorada: ${chart.id}"
                 return@mapNotNull null
             }
+            val externalMusic = matchMusic(chart, songs)
+            externalMusic?.uri?.let(matchedExternalUris::add)
             ChartLibraryItem(
                 chart = chart,
                 origin = originAndName.first,
                 sourceName = originAndName.second,
-                musicUri = matchMusic(chart, songs)?.uri,
+                musicUri = matchBundledMusic(chart, problems) ?: externalMusic?.uri,
             )
         }
         return ChartLibrarySnapshot(
             items = items,
+            unchartedSongs = songs.filterNot { it.uri in matchedExternalUris }.sortedBy { it.name.lowercase() },
             musicFileCount = songs.size,
+            bundledMusicCount = items.count { it.origin == ChartOrigin.BUILT_IN && !it.isCalibration && it.musicUri != null },
             extraChartCount = items.count { it.origin == ChartOrigin.EXTRA },
             problems = problems,
         )
@@ -114,6 +126,30 @@ class ChartLibrary(
         }
     }
 
+    private fun matchBundledMusic(chart: RhythmChart, problems: MutableList<String>): Uri? {
+        if (chart.audioFileNames.isEmpty()) return null
+        val names = runCatching { context.assets.list(BUILT_IN_MUSIC_FOLDER).orEmpty() }
+            .onFailure { problems += "Não foi possível ler as músicas internas." }
+            .getOrDefault(emptyArray())
+        val declared = chart.audioFileNames.map(::normalized).filter(String::isNotBlank).toSet()
+        val assetName = names.firstOrNull { normalized(it) in declared } ?: return null
+        val version = runCatching {
+            context.packageManager.getPackageInfo(context.packageName, 0).longVersionCode
+        }.getOrDefault(0L)
+        val destination = File(context.cacheDir, "bundled-music/$version/$assetName")
+        return runCatching {
+            if (!destination.isFile || destination.length() == 0L) {
+                destination.parentFile?.mkdirs()
+                context.assets.open("$BUILT_IN_MUSIC_FOLDER/$assetName").use { input ->
+                    destination.outputStream().use(input::copyTo)
+                }
+            }
+            Uri.fromFile(destination)
+        }.onFailure {
+            problems += "A música interna de ${chart.title} não pôde ser preparada."
+        }.getOrNull()
+    }
+
     private fun TreeDocument.isAudio(): Boolean {
         val lower = name.lowercase()
         return mimeType.startsWith("audio/") ||
@@ -132,6 +168,7 @@ class ChartLibrary(
 
     companion object {
         private const val BUILT_IN_CHART_FOLDER = "charts"
+        private const val BUILT_IN_MUSIC_FOLDER = "music"
         private const val CHART_EXTENSION = ".pdrum.json"
     }
 }

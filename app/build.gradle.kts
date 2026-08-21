@@ -11,8 +11,8 @@ android {
         applicationId = "com.bobbydias.peterdrummer"
         minSdk = 28
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.3.0-chart-library"
+        versionCode = 7
+        versionName = "0.3.1-ampularia-demo"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
