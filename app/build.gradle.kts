@@ -11,8 +11,8 @@ android {
         applicationId = "com.bobbydias.peterdrummer"
         minSdk = 28
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.2.1-startup-fix"
+        versionCode = 4
+        versionName = "0.2.2-startup-diagnostic"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
