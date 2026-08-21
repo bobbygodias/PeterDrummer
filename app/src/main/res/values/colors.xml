@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="stage_black">#090706</color>
+    <color name="stage_wood">#2A1711</color>
+    <color name="stage_warm">#D29A5B</color>
+    <color name="text_primary">#F2E9DD</color>
+    <color name="text_muted">#B9A898</color>
+</resources>

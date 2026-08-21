@@ -1,78 +1,94 @@
-# Peter Drummer 🥁
-Toque bateria no ritmo da sua própria música no Android (celular, tablet ou TV com Android 9+).
+# Peter Drummer
 
-## 📦 Baixar APK (Android 9+)
-> **Link direto (primeira página do repositório):**
+Jogo rítmico Android feito para Peter tocar bateria sobre faixas **drumless**
+guardadas no próprio aparelho.
 
-➡️ **[Download PeterDrummer.apk](https://github.com/bobbygodias/PeterDrummer/releases/latest/download/PeterDrummer.apk)**
+> Estado atual: reconstrução nativa iniciada em 20/08/2026. Ainda não existe
+> um APK testado desta versão.
 
-> Troque `<SEU_USUARIO>/<SEU_REPO>` pelo caminho real do seu GitHub. O arquivo APK deve ser publicado em **Releases** com exatamente o nome `PeterDrummer.apk`.
+## O que torna este jogo diferente
 
----
+- As músicas não são empacotadas no APK.
+- O jogador escolhe uma pasta externa usando o seletor seguro do Android.
+- Cada música possui uma partitura temporal exata incluída no aplicativo.
+- O jogo não tenta adivinhar a bateria analisando frequências do MP3.
+- Os toques disparam samples internos e a animação correspondente do Peter.
+- O modo automático executa a mesma partitura usada no modo jogável.
 
-## 🎬 Vídeo de introdução (10s)
-- Link enviado: **https://drive.google.com/file/d/128ZM10Tj9-PjYlbRDdSzx1X6bHDDiV5T/view?usp=sharing**
-- Para usar localmente no app: exporte para `intro.mp4` e coloque em `Assets/StreamingAssets/intro.mp4`.
-- Script de controle: `Unity/Assets/Scripts/Visual/IntroVideoController.cs` (autoplay + skip por toque).
+## Oito pistas fixas
 
-## 🎮 Visão de layout (paisagem)
-- **Metade superior:** arte do personagem + animações de batida.
-- **Metade inferior:** esteira de notas rolando da direita para a esquerda.
-- **Zona de acerto:** lado esquerdo da esteira.
-- **Spawn:** lado direito da esteira.
+| Índice | Peça |
+|---:|---|
+| 0 | Bumbo |
+| 1 | Caixa |
+| 2 | Chimbal |
+| 3 | Tom agudo |
+| 4 | Tom médio |
+| 5 | Surdo |
+| 6 | Crash |
+| 7 | Prato de condução / ride |
 
-A imagem base enviada é ideal para usar como plano de fundo da área superior.
+Os índices fazem parte do formato das partituras e não devem ser reordenados
+depois que os mapas forem publicados.
 
----
+## Primeira fatia implementada
 
-## 🧱 Arquitetura modular implementada (Unity/C#)
-Scripts criados em `Unity/Assets/Scripts`:
+- projeto Android Kotlin nativo, sem Unity;
+- interface vertical e offline;
+- intro opcional antes do menu;
+- menu com os três modos definidos para o produto;
+- seleção persistente da pasta externa;
+- volumes independentes de música e bateria;
+- pista em perspectiva com exatamente oito linhas e oito botões;
+- linha de preparação separada da zona real de acerto;
+- suporte a multitouch e notas simultâneas;
+- julgamento temporal determinístico;
+- três mensagens finais por faixa de acerto;
+- ranking local com cinco posições;
+- demonstração automática usando a mesma partitura de calibração.
 
-- `Core/GameFlowController.cs`
-- `Core/SongConductor.cs`
-- `Core/ScoreSystem.cs`
-- `Core/DifficultyController.cs`
-- `Audio/AudioImportService.cs`
-- `Audio/RuntimeAudioLoader.cs`
-- `Audio/AudioAnalyzer.cs`
-- `Rhythm/NoteSpawner.cs`
-- `Rhythm/NoteObject.cs`
-- `Input/PlayerInputController.cs`
-- `Input/HitZone.cs`
-- `Visual/CharacterVisualController.cs`
-- `Visual/HudFeedbackController.cs`
-- `Visual/ResultsPanelController.cs`
-- `Visual/IntroVideoController.cs`
-- `Data/RhythmTypes.cs`
+Enquanto as partituras e WAVs definitivos não chegam, os três modos abrem uma
+partitura curta de calibração. Isso prova o motor sem fingir que o catálogo já
+está pronto.
 
-Detalhes de arquitetura e matemática de sincronização:
+## Assets ainda necessários
 
-➡️ `Docs/Architecture.md`
+Coloque o vídeo aprovado em:
 
----
+`app/src/main/res/raw/peter_drummer_intro.mp4`
 
-## 🔁 Pipeline do jogo
-1. Usuário escolhe MP3/WAV no seletor Android.
-2. Áudio é carregado dinamicamente.
-3. Analisador detecta batidas por bandas de frequência.
-4. `NoteSpawner` cria notas com antecedência calculada por distância/velocidade.
-5. `SongConductor` usa `AudioSettings.dspTime` para relógio global.
-6. Input detecta acerto/erro na zona de hit (incluindo miss automático quando a nota passa).
-7. Evento de input dispara animação do personagem na parte superior.
-8. `ScoreSystem` acumula pontos, combo, accuracy e julgamentos em tempo real no HUD.
-9. `SongConductor` dispara evento de fim e o `ResultsPanelController` mostra os resultados finais.
+Os WAVs seguirão os nomes documentados em
+[`docs/AUDIO_ASSETS.md`](docs/AUDIO_ASSETS.md). Arquivos ausentes ficam em
+silêncio para não impedir a evolução do código.
 
----
+## Compilar
 
-## ⚙️ Requisitos
-- Unity 2022 LTS+
-- Android API level 28+ (Android 9+)
-- Plugin NativeFilePicker (seletor de arquivos nativo)
+Requisitos previstos:
 
----
+- JDK 17;
+- Android SDK 36;
+- Android Gradle Plugin 8.13;
+- Gradle 8.13;
+- Kotlin 2.4.10.
 
-## 🚀 Próximos passos recomendados
-- Ajuste fino de thresholds do analisador por música.
-- Ajustar presets de dificuldade (Easy/Normal/Hard) por playtest.
-- Quantização opcional por BPM estimado.
-- Tela de resultados e ranking local.
+```bash
+./gradlew test
+./gradlew assembleDebug
+```
+
+O wrapper binário e o SDK Android ainda precisam ser gerados/instalados antes
+do primeiro build limpo.
+
+## Documentação
+
+- [`docs/PRODUCT.md`](docs/PRODUCT.md): fluxo completo aprovado.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): decisões técnicas e relógio.
+- [`docs/AUDIO_ASSETS.md`](docs/AUDIO_ASSETS.md): contrato dos samples.
+- [`docs/CONTINUITY.md`](docs/CONTINUITY.md): estado verificável para retomada.
+
+## Conteúdo externo
+
+Este repositório não distribui as faixas musicais. O usuário fornece os próprios
+arquivos drumless e concede acesso somente à pasta escolhida.
+
+Código e documentação: CC0 1.0 Universal, conforme o arquivo `LICENSE`.
