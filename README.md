@@ -4,7 +4,8 @@ Jogo rítmico Android feito para Peter tocar bateria sobre faixas **drumless**
 guardadas no próprio aparelho.
 
 > Estado atual: reconstrução nativa iniciada em 20/08/2026. Ainda não existe
-> um APK testado desta versão.
+> um APK testado em aparelho, mas testes unitários e `assembleDebug` passam no
+> GitHub Actions.
 
 ## O que torna este jogo diferente
 

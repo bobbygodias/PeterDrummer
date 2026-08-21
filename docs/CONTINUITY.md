@@ -22,7 +22,8 @@
 
 ## Ainda não foi validado
 
-- build Android: o ambiente desta sessão não possui SDK/Gradle instalados;
+- build Android no GitHub Actions: testes e `assembleDebug` passaram;
+- execução local nesta sessão: indisponível por ausência de SDK/Gradle;
 - execução em emulador ou aparelho;
 - intro real empacotada;
 - samples reais;
