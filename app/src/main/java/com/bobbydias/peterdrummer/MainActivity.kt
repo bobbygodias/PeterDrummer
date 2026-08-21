@@ -22,7 +22,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.VideoView
 import com.bobbydias.peterdrummer.audio.DrumSamplePlayer
-import com.bobbydias.peterdrummer.core.DrumArticulation
 import com.bobbydias.peterdrummer.core.DrumLane
 import com.bobbydias.peterdrummer.core.GameMode
 import com.bobbydias.peterdrummer.core.PlayResult
@@ -40,78 +39,22 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showDiagnosticGate()
+        val safeRoot = FrameLayout(this).apply { setBackgroundColor(Color.BLACK) }
+        setContentView(safeRoot)
+        safeRoot.post {
+            makeImmersive()
+            showIntroOrHome()
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) makeImmersive()
     }
 
     override fun onDestroy() {
         samplePlayer?.release()
         super.onDestroy()
-    }
-
-    private fun showDiagnosticGate(status: String? = null) {
-        val content = centeredColumn()
-        content.addView(title("PETER DRUMMER", 38f))
-        content.addView(space(12))
-        content.addView(label("DIAGNÓSTICO DE INICIALIZAÇÃO", 16f, muted = true))
-        if (status != null) {
-            content.addView(space(18))
-            content.addView(label(status, 16f))
-        }
-        content.addView(space(36))
-        content.addView(actionButton("1 — TESTAR INTRO") { showIntroOrHome() })
-        content.addView(space(14))
-        content.addView(actionButton("2 — TESTAR BATERIA") { startAudioProbe() })
-        content.addView(space(14))
-        content.addView(actionButton("3 — ABRIR JOGO SEM MÍDIA") { showHome() })
-        content.addView(space(24))
-        content.addView(label("O botão que fechar o aplicativo identifica o culpado.", 14f, muted = true))
-        setContentView(stageRoot(content))
-    }
-
-    private fun startAudioProbe() {
-        val content = centeredColumn()
-        content.addView(title("INICIANDO BATERIA", 30f))
-        content.addView(space(18))
-        content.addView(label("Se o aplicativo fechar agora, o motor de áudio é o culpado.", 16f, muted = true))
-        val root = stageRoot(content)
-        setContentView(root)
-
-        root.postDelayed({
-            runCatching {
-                samplePlayer?.release()
-                DrumSamplePlayer(this).also { player ->
-                    player.volume = settingsStore.drumVolume
-                    player.startLoading()
-                }
-            }.onSuccess { player ->
-                samplePlayer = player
-                root.postDelayed({ showAudioProbeReady() }, 1600L)
-            }.onFailure { error ->
-                showDiagnosticGate("ERRO DE ÁUDIO: ${error.javaClass.simpleName}")
-            }
-        }, 350L)
-    }
-
-    private fun showAudioProbeReady() {
-        val content = centeredColumn()
-        content.addView(title("MOTOR DE ÁUDIO ATIVO", 28f))
-        content.addView(space(16))
-        content.addView(label("Agora teste três articulações isoladamente.", 15f, muted = true))
-        content.addView(space(28))
-        content.addView(actionButton("TOCAR CAIXA", playClick = false) {
-            samplePlayer?.play(DrumLane.SNARE, 118)
-        })
-        content.addView(space(12))
-        content.addView(actionButton("CHIMBAL ABERTO", playClick = false) {
-            samplePlayer?.play(DrumLane.HI_HAT, 108, DrumArticulation.HI_HAT_OPEN)
-        })
-        content.addView(space(12))
-        content.addView(actionButton("FECHAR CHIMBAL", playClick = false) {
-            samplePlayer?.play(DrumLane.HI_HAT, 108, DrumArticulation.HI_HAT_PEDAL)
-        })
-        content.addView(space(24))
-        content.addView(smallButton("VOLTAR AO DIAGNÓSTICO") { showDiagnosticGate("ÁUDIO INICIALIZADO SEM CRASH.") })
-        setContentView(stageRoot(content))
     }
 
     private fun showIntroOrHome() {
@@ -121,13 +64,13 @@ class MainActivity : Activity() {
                 player.isLooping = false
                 start()
             }
-            setOnCompletionListener { showDiagnosticGate("INTRO CONCLUÍDA SEM CRASH.") }
+            setOnCompletionListener { showHome() }
             setOnErrorListener { _, what, extra ->
-                showDiagnosticGate("INTRO RECUSADA PELO ANDROID: $what/$extra")
+                showHome()
                 true
             }
         }
-        root.addView(video, FrameLayout.LayoutParams(MATCH, MATCH))
+        root.addView(video, FrameLayout.LayoutParams(MATCH, WRAP, Gravity.CENTER))
 
         val skip = TextView(this).apply {
             text = "Toque para pular"
@@ -144,7 +87,7 @@ class MainActivity : Activity() {
         )
         root.setOnClickListener {
             video.stopPlayback()
-            showDiagnosticGate("INTRO PULADA; REPRODUÇÃO INICIADA.")
+            showHome()
         }
         setContentView(root)
 
@@ -159,12 +102,12 @@ class MainActivity : Activity() {
                     privateIntroFile()?.let(Uri::fromFile)
                 }
                 if (introUri == null) {
-                    showDiagnosticGate("INTRO NÃO ENCONTRADA NO APK.")
+                    showHome()
                 } else {
                     video.setVideoURI(introUri)
                 }
-            }.onFailure { error ->
-                showDiagnosticGate("ERRO DE INTRO: ${error.javaClass.simpleName}")
+            }.onFailure {
+                showHome()
             }
         }
     }
@@ -186,9 +129,19 @@ class MainActivity : Activity() {
         content.addView(actionButton("CLIQUE AQUI E VAMOS ARREBENTAR!") {
             samplePlayer?.playStartFill { showModeMenu() } ?: showModeMenu()
         })
-        content.addView(space(20))
-        content.addView(smallButton("VOLTAR AO DIAGNÓSTICO") { showDiagnosticGate() })
-        setContentView(stageRoot(content))
+        val root = stageRoot(content)
+        setContentView(root)
+        root.post { ensureAudioEngine() }
+    }
+
+    private fun ensureAudioEngine() {
+        if (samplePlayer != null) return
+        runCatching {
+            DrumSamplePlayer(this).also { player ->
+                player.volume = settingsStore.drumVolume
+                player.startLoading()
+            }
+        }.onSuccess { player -> samplePlayer = player }
     }
 
     private fun showModeMenu() {
@@ -407,6 +360,7 @@ class MainActivity : Activity() {
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         isAllCaps = false
         background = roundedBackground(0xFF351B14.toInt(), 0xFFD29A5B.toInt(), 16f)
+        isSoundEffectsEnabled = false
         setPadding(dp(18), dp(14), dp(18), dp(14))
         setOnClickListener {
             if (playClick) samplePlayer?.playMenuClick()

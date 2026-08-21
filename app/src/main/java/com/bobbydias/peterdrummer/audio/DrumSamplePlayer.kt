@@ -77,11 +77,11 @@ class DrumSamplePlayer(private val context: Context) {
             .coerceIn(1, layerCount)
         val roundRobinKey = lane to effectiveArticulation
         val variant = (roundRobin.getOrDefault(roundRobinKey, 0) % DrumSampleCatalog.variants) + 1
-        roundRobin[roundRobinKey] = variant
 
         val key = DrumSampleKey(lane, layer, variant, effectiveArticulation)
         val soundId = soundIds[key] ?: return
         if (soundId !in loadedSoundIds) return
+        roundRobin[roundRobinKey] = variant
 
         val velocityGain = (velocity.coerceIn(1, 127) / 127f).coerceAtLeast(0.22f)
         val gain = volume * velocityGain
@@ -113,21 +113,23 @@ class DrumSamplePlayer(private val context: Context) {
     }
 
     private fun prioritizedCatalog(): List<DrumSampleKey> {
-        val essentials = listOf(
-            DrumLane.SNARE,
-            DrumLane.HIGH_TOM,
-            DrumLane.MID_TOM,
-            DrumLane.FLOOR_TOM,
-            DrumLane.KICK,
-            DrumLane.CRASH,
-            DrumLane.HI_HAT,
-            DrumLane.RIDE,
-        )
-        return DrumSampleCatalog.entries.sortedBy { key ->
-            val lanePriority = essentials.indexOf(key.lane).coerceAtLeast(0)
-            val playableLayerPriority = kotlin.math.abs(key.layer - 5)
-            lanePriority * 100 + playableLayerPriority * 10 + key.variant
+        val warmUp = buildList {
+            repeat(DrumSampleCatalog.variants) { index ->
+                val variant = index + 1
+                add(DrumSampleKey(DrumLane.SNARE, 6, variant, DrumArticulation.STANDARD))
+                add(DrumSampleKey(DrumLane.HI_HAT, 5, variant, DrumArticulation.HI_HAT_CLOSED))
+                add(DrumSampleKey(DrumLane.HI_HAT, 5, variant, DrumArticulation.HI_HAT_OPEN))
+                add(DrumSampleKey(DrumLane.HI_HAT, 1, variant, DrumArticulation.HI_HAT_PEDAL))
+                add(DrumSampleKey(DrumLane.CRASH, 5, variant, DrumArticulation.STANDARD))
+                add(DrumSampleKey(DrumLane.RIDE, 5, variant, DrumArticulation.STANDARD))
+                add(DrumSampleKey(DrumLane.HIGH_TOM, 5, variant, DrumArticulation.STANDARD))
+                add(DrumSampleKey(DrumLane.MID_TOM, 5, variant, DrumArticulation.STANDARD))
+                add(DrumSampleKey(DrumLane.FLOOR_TOM, 5, variant, DrumArticulation.STANDARD))
+                add(DrumSampleKey(DrumLane.KICK, 6, variant, DrumArticulation.STANDARD))
+            }
         }
+        val warmSet = warmUp.toSet()
+        return warmUp + DrumSampleCatalog.entries.filterNot(warmSet::contains)
     }
 
     private fun loadNext() {
