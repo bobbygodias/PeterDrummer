@@ -82,7 +82,7 @@ class ChartLibrary(
 
     private fun scanSongs(problems: MutableList<String>): List<TreeDocument> {
         val tree = settings.songFolderUri ?: return emptyList()
-        return runCatching { scanner.list(tree).filter(TreeDocument::isAudio) }
+        return runCatching { scanner.list(tree).filter { document -> document.isAudio() } }
             .onFailure { problems += "Não foi possível reler a pasta de músicas." }
             .getOrDefault(emptyList())
     }
