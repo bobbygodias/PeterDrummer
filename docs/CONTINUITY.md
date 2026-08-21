@@ -14,7 +14,10 @@
 
 - estrutura Gradle;
 - oito pistas fixas;
+- ordem canônica: chimbal, prato de ataque, prato de condução, snare, tom 1,
+  tom 2, surdo e bumbo;
 - tela de pista responsiva e multitouch;
+- estado de performance do Peter preparado para golpes simultâneos;
 - partitura temporal de calibração;
 - pontuação e mensagens;
 - menus, configurações, SAF e ranking;

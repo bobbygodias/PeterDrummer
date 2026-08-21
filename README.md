@@ -20,14 +20,14 @@ guardadas no próprio aparelho.
 
 | Índice | Peça |
 |---:|---|
-| 0 | Bumbo |
-| 1 | Caixa |
-| 2 | Chimbal |
-| 3 | Tom agudo |
-| 4 | Tom médio |
-| 5 | Surdo |
-| 6 | Crash |
-| 7 | Prato de condução / ride |
+| 0 | Chimbal |
+| 1 | Prato de ataque / crash |
+| 2 | Prato de condução / ride |
+| 3 | Snare / caixa |
+| 4 | Tom 1 |
+| 5 | Tom 2 |
+| 6 | Surdo |
+| 7 | Bumbo |
 
 Os índices fazem parte do formato das partituras e não devem ser reordenados
 depois que os mapas forem publicados.
@@ -43,6 +43,7 @@ depois que os mapas forem publicados.
 - pista em perspectiva com exatamente oito linhas e oito botões;
 - linha de preparação separada da zona real de acerto;
 - suporte a multitouch e notas simultâneas;
+- estado de performance do Peter com poses compostas para braços e pedal;
 - julgamento temporal determinístico;
 - três mensagens finais por faixa de acerto;
 - ranking local com cinco posições;
