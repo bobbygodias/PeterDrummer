@@ -37,4 +37,34 @@ class ChartValidatorTest {
 
         assertEquals(1, ChartValidator.validate(chart).size)
     }
+
+    @Test
+    fun openHiHatArticulationIsValidOnlyOnTheHiHatLane() {
+        val valid = RhythmChart(
+            id = "valid",
+            title = "Valid",
+            artist = "Test",
+            durationMs = 5_000,
+            events = listOf(
+                RhythmEvent(
+                    1_000,
+                    DrumLane.HI_HAT,
+                    articulation = DrumArticulation.HI_HAT_OPEN,
+                ),
+            ),
+        )
+        val invalid = valid.copy(
+            id = "invalid",
+            events = listOf(
+                RhythmEvent(
+                    1_000,
+                    DrumLane.RIDE,
+                    articulation = DrumArticulation.HI_HAT_OPEN,
+                ),
+            ),
+        )
+
+        assertTrue(ChartValidator.validate(valid).isEmpty())
+        assertEquals(1, ChartValidator.validate(invalid).size)
+    }
 }

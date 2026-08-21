@@ -1,9 +1,17 @@
 package com.bobbydias.peterdrummer.core
 
+enum class DrumArticulation {
+    STANDARD,
+    HI_HAT_CLOSED,
+    HI_HAT_OPEN,
+    HI_HAT_PEDAL,
+}
+
 data class RhythmEvent(
     val timeMs: Long,
     val lane: DrumLane,
     val velocity: Int = 100,
+    val articulation: DrumArticulation = DrumArticulation.STANDARD,
 )
 
 data class RhythmChart(
@@ -31,6 +39,10 @@ object ChartValidator {
             }
             if (event.velocity !in 1..127) {
                 problems += ChartProblem(index, "Velocity must be between 1 and 127")
+            }
+            val isHiHatArticulation = event.articulation != DrumArticulation.STANDARD
+            if (isHiHatArticulation && event.lane != DrumLane.HI_HAT) {
+                problems += ChartProblem(index, "Hi-hat articulation used on a different lane")
             }
             if (event.timeMs < previousTime) {
                 problems += ChartProblem(index, "Events are not sorted by time")

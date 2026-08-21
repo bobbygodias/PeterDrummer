@@ -18,6 +18,7 @@ da música. Cada evento contém:
 - instante em milissegundos;
 - pista/peça;
 - intensidade MIDI de 1 a 127.
+- articulação, incluindo chimbal fechado, aberto ou pedal.
 
 Eventos com o mesmo tempo e pistas diferentes representam batidas simultâneas.
 
@@ -32,9 +33,10 @@ alteram a posição renderizada, não o tempo musical.
 
 ## Áudio
 
-O `DrumSamplePlayer` atual usa `SoundPool`, suficiente para validar interação e
-nomes de assets. O motor definitivo deve usar Oboe/AAudio para reduzir latência,
-com samples a 48 kHz e callbacks sem alocação, bloqueio ou I/O.
+O `DrumSamplePlayer` usa `SoundPool` e espera um catálogo privado de 144
+assets Opus, com seleção por velocidade e três variações round-robin. Chimbal
+fechado/pedal encerra a voz aberta. Ausência dos assets é tratada como silêncio
+no build público. O motor definitivo deve usar Oboe/AAudio.
 
 O backing track e os samples terão controles de volume independentes. Bluetooth
 precisará de calibração explícita devido à latência variável.

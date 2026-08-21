@@ -1,17 +1,22 @@
 # Contrato dos assets de bateria
 
-Colocar em `app/src/main/res/raw/`:
+O catálogo do build pessoal contém 144 arquivos Opus:
 
-| Recurso | Peça |
-|---|---|
-| `drum_hihat.wav` | Chimbal |
-| `drum_crash.wav` | Prato de ataque |
-| `drum_ride.wav` | Prato de condução |
-| `drum_snare.wav` | Snare / caixa |
-| `drum_tom_high.wav` | Tom 1 |
-| `drum_tom_mid.wav` | Tom 2 |
-| `drum_floor_tom.wav` | Surdo |
-| `drum_kick.wav` | Bumbo |
+| Família | Quantidade |
+|---|---:|
+| Bumbo | 6 intensidades × 3 variações |
+| Snare | 6 × 3 |
+| Chimbal fechado | 5 × 3 |
+| Chimbal aberto derivado | 5 × 3 |
+| Chimbal de pedal derivado | 3 variações |
+| Tom 1 | 5 × 3 |
+| Tom 2 | 5 × 3 |
+| Surdo | 5 × 3 |
+| Prato de ataque | 5 × 3 |
+| Prato de condução | 5 × 3 |
+
+O pacote privado possui `manifest.json` com origem, derivação e SHA-256 de
+cada asset preparado. Os binários não são distribuídos no repositório público.
 
 ## Alvo sonoro
 
@@ -19,11 +24,14 @@ Colocar em `app/src/main/res/raw/`:
 - bumbo e tons com caráter de pele hidráulica;
 - caixa encorpada, sem som plástico;
 - pratos B20 musicais, brilhantes e com decay natural;
-- 48 kHz, PCM WAV, mesma quantidade de canais em todo o kit.
+- 48 kHz, estéreo, Opus sem compressão adicional pelo empacotador Android.
 
-O primeiro arquivo de cada peça valida o motor. A evolução deverá oferecer de
-quatro a oito camadas de velocidade e variações round-robin para evitar efeito
-de metralhadora.
+O piloto usa `SoundPool` com −6 dB de headroom. Pratos acima de cinco segundos
+são encerrados com fade para respeitar o limite de memória decodificada por
+sample. O motor nativo futuro poderá voltar às caudas integrais sem mudar o
+formato das partituras.
+
+Fechado ou pedal interrompe a voz aberta do chimbal antes do novo ataque.
 
 Não rotular samples como Zildjian oficiais sem procedência/licença que permita
 essa afirmação. A referência é sonora, não de marca.

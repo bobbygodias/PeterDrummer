@@ -7,8 +7,7 @@
 - Package: `com.bobbydias.peterdrummer`.
 - Distribuição pretendida: APK pessoal/offline para Peter; repositório público
   sob CC0 conforme estado anterior.
-- Branch antiga preservada: `archive/unity-prototype-2026-08-20`.
-- Branch nova: `rebuild/native-android-v0.1`.
+- Branch pública ativa: `feature/even-flow-engine-v0.2-public`.
 
 ## Existe agora
 
@@ -21,21 +20,25 @@
 - partitura temporal de calibração;
 - pontuação e mensagens;
 - menus, configurações, SAF e ranking;
-- ganchos para intro e oito WAVs.
+- intro e 144 samples preparados no commit local privado `7bfed99`;
+- catálogo público preparado para chimbal aberto e pedal;
+- seleção por intensidade e round-robin;
+- esqueleto temporal de **Even Flow** documentado e testado.
 
 ## Ainda não foi validado
 
 - build Android no GitHub Actions: testes e `assembleDebug` passaram;
 - execução local nesta sessão: indisponível por ausência de SDK/Gradle;
 - execução em emulador ou aparelho;
-- intro real empacotada;
-- samples reais;
+- geração do APK pessoal com os assets privados;
+- reprodução e latência dos samples em aparelho;
 - backing track externo sincronizado;
 - animações finais do Peter;
-- catálogo corrigido e partituras das músicas.
+- eventos completos da partitura de **Even Flow**;
+- partituras das demais músicas.
 
 ## Próxima ação técnica
 
-Executar o workflow Android com Gradle 8.13, gerar o wrapper binário após essa
-validação, adicionar a intro e os oito WAVs e instalar o APK no aparelho alvo
-para medir toque e latência.
+Executar testes e `assembleDebug` do motor público no GitHub. Para montar o
+APK pessoal audível, injetar os assets privados fora do repositório e então
+medir carregamento, multitouch, resposta sonora e latência.

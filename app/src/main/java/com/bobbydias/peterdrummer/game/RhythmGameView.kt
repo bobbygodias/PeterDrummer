@@ -11,6 +11,7 @@ import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
 import com.bobbydias.peterdrummer.core.DrumLane
+import com.bobbydias.peterdrummer.core.DrumArticulation
 import com.bobbydias.peterdrummer.core.GameMode
 import com.bobbydias.peterdrummer.core.HitJudgement
 import com.bobbydias.peterdrummer.core.JudgementEngine
@@ -22,7 +23,7 @@ class RhythmGameView(
     context: Context,
     private val chart: RhythmChart,
     private val mode: GameMode,
-    private val onDrumHit: (DrumLane, Int) -> Unit,
+    private val onDrumHit: (DrumLane, Int, DrumArticulation) -> Unit,
     private val onFinished: (PlayResult) -> Unit,
 ) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -191,14 +192,18 @@ class RhythmGameView(
             val radiusY = (radiusX * 0.50f).coerceAtLeast(4f)
 
             paint.color = event.lane.colorArgb
-            paint.style = Paint.Style.FILL
-            canvas.drawOval(
-                centerX - radiusX,
-                y - radiusY,
-                centerX + radiusX,
-                y + radiusY,
-                paint,
-            )
+            paint.style = if (event.articulation == DrumArticulation.HI_HAT_OPEN) {
+                Paint.Style.STROKE
+            } else {
+                Paint.Style.FILL
+            }
+            paint.strokeWidth = if (event.articulation == DrumArticulation.HI_HAT_OPEN) 5f else 1.5f
+            canvas.drawOval(centerX - radiusX, y - radiusY, centerX + radiusX, y + radiusY, paint)
+            if (event.articulation == DrumArticulation.HI_HAT_PEDAL) {
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = 3f
+                canvas.drawLine(centerX - radiusX * 0.45f, y, centerX + radiusX * 0.45f, y, paint)
+            }
             paint.style = Paint.Style.STROKE
             paint.color = Color.WHITE
             paint.strokeWidth = 1.5f
@@ -253,7 +258,7 @@ class RhythmGameView(
                 autoTriggered[index] = true
                 engine.hit(event.lane, event.timeMs)
                 resolvedEvents += event
-                onDrumHit(event.lane, event.velocity)
+                onDrumHit(event.lane, event.velocity, event.articulation)
                 showLaneFeedback(event.lane, HitJudgement.PERFECT)
             }
         }
@@ -273,7 +278,15 @@ class RhythmGameView(
                 val songTimeMs = (SystemClock.uptimeMillis() - startUptimeMs).coerceAtLeast(0L)
                 val judged = engine.hit(lane, songTimeMs)
                 judged.event?.let(resolvedEvents::add)
-                onDrumHit(lane, judged.event?.velocity ?: 100)
+                onDrumHit(
+                    lane,
+                    judged.event?.velocity ?: 100,
+                    judged.event?.articulation ?: if (lane == DrumLane.HI_HAT) {
+                        DrumArticulation.HI_HAT_CLOSED
+                    } else {
+                        DrumArticulation.STANDARD
+                    },
+                )
                 showLaneFeedback(lane, judged.judgement)
                 performClick()
             }

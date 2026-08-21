@@ -3,8 +3,8 @@
 Jogo rítmico Android feito para Peter tocar bateria sobre faixas **drumless**
 guardadas no próprio aparelho.
 
-> Estado atual: reconstrução nativa iniciada em 20/08/2026. Ainda não existe
-> um APK testado em aparelho, mas testes unitários e `assembleDebug` passam no
+> Estado atual: piloto audível v0.2 em construção. Ainda não existe um APK
+> validado em aparelho, mas testes unitários e `assembleDebug` passam no
 > GitHub Actions.
 
 ## O que torna este jogo diferente
@@ -48,20 +48,18 @@ depois que os mapas forem publicados.
 - três mensagens finais por faixa de acerto;
 - ranking local com cinco posições;
 - demonstração automática usando a mesma partitura de calibração.
+- suporte à intro real no build pessoal;
+- catálogo para 126 samples em camadas de intensidade e round-robin;
+- catálogo para 15 chimbais abertos derivados e 3 fechamentos por pedal;
+- notas distintas para chimbal fechado, aberto e pedal na mesma pista;
+- esqueleto temporal verificado da faixa-laboratório **Even Flow**.
 
-Enquanto as partituras e WAVs definitivos não chegam, os três modos abrem uma
-partitura curta de calibração. Isso prova o motor sem fingir que o catálogo já
-está pronto.
+Enquanto a transcrição de **Even Flow** não está concluída, os três modos
+abrem uma partitura curta de calibração que já exercita as oito pistas e as
+três articulações do chimbal.
 
-## Assets ainda necessários
-
-Coloque o vídeo aprovado em:
-
-`app/src/main/res/raw/peter_drummer_intro.mp4`
-
-Os WAVs seguirão os nomes documentados em
-[`docs/AUDIO_ASSETS.md`](docs/AUDIO_ASSETS.md). Arquivos ausentes ficam em
-silêncio para não impedir a evolução do código.
+Os binários da intro e do kit não são publicados no repositório. O build
+pessoal os recebe localmente depois da validação do pacote certificado.
 
 ## Compilar
 
@@ -87,6 +85,7 @@ produzir ou verificar.
 - [`docs/PRODUCT.md`](docs/PRODUCT.md): fluxo completo aprovado.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): decisões técnicas e relógio.
 - [`docs/AUDIO_ASSETS.md`](docs/AUDIO_ASSETS.md): contrato dos samples.
+- [`docs/EVEN_FLOW_PILOT.md`](docs/EVEN_FLOW_PILOT.md): faixa-laboratório.
 - [`docs/CONTINUITY.md`](docs/CONTINUITY.md): estado verificável para retomada.
 
 ## Conteúdo externo
@@ -94,4 +93,5 @@ produzir ou verificar.
 Este repositório não distribui as faixas musicais. O usuário fornece os próprios
 arquivos drumless e concede acesso somente à pasta escolhida.
 
-Código e documentação: CC0 1.0 Universal, conforme o arquivo `LICENSE`.
+Código e documentação: CC0 1.0 Universal. Áudio e intro seguem as exceções
+descritas em [`ASSET_LICENSE.md`](ASSET_LICENSE.md).

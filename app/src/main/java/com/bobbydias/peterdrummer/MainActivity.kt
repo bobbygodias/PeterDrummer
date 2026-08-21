@@ -133,7 +133,11 @@ class MainActivity : Activity() {
         }
         content.addView(title("ESCOLHA AÊ, FERA", 30f))
         content.addView(space(20))
-        content.addView(label("O catálogo definitivo entra depois da conferência das faixas.", 15f, muted = true))
+        content.addView(label("FAIXA-LABORATÓRIO", 14f, muted = true))
+        content.addView(space(8))
+        content.addView(label("Pearl Jam — Even Flow", 20f))
+        content.addView(space(8))
+        content.addView(label("Partitura e bateria isolada em alinhamento.", 14f, muted = true))
         content.addView(space(20))
         content.addView(actionButton("CALIBRAÇÃO DAS OITO PISTAS") { startCalibration(GameMode.CHOOSE) })
         content.addView(space(30))
@@ -149,7 +153,9 @@ class MainActivity : Activity() {
             context = this,
             chart = chart,
             mode = mode,
-            onDrumHit = { lane, velocity -> samplePlayer.play(lane, velocity) },
+            onDrumHit = { lane, velocity, articulation ->
+                samplePlayer.play(lane, velocity, articulation)
+            },
             onFinished = { result ->
                 latestResult = result
                 runOnUiThread { showResults(result) }
