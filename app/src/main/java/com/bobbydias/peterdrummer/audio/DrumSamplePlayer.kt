@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import com.bobbydias.peterdrummer.core.DrumArticulation
 import com.bobbydias.peterdrummer.core.DrumLane
+import java.util.ArrayDeque
 
 /**
  * Velocity-layered, round-robin drum player used by the first audible build.
@@ -20,7 +21,10 @@ class DrumSamplePlayer(private val context: Context) {
     private val loadedSoundIds = mutableSetOf<Int>()
     private val soundIds = mutableMapOf<DrumSampleKey, Int>()
     private val roundRobin = mutableMapOf<Pair<DrumLane, DrumArticulation>, Int>()
+    private val pendingLoads = ArrayDeque<DrumSampleKey>()
     private var activeOpenHiHatStream = 0
+    private var loadingStarted = false
+    private var released = false
 
     private val soundPool = SoundPool.Builder()
         .setMaxStreams(32)
@@ -34,17 +38,29 @@ class DrumSamplePlayer(private val context: Context) {
         .also { pool ->
             pool.setOnLoadCompleteListener { _, sampleId, status ->
                 if (status == 0) loadedSoundIds += sampleId
+                handler.post(::loadNext)
             }
         }
-
-    init {
-        loadCatalog()
-    }
 
     var volume: Float = 0.85f
         set(value) {
             field = value.coerceIn(0f, 1f)
         }
+
+    /**
+     * Begins a single-file-at-a-time preload after the Activity has rendered.
+     *
+     * Loading the complete 144-sample kit inside Activity.onCreate launched a
+     * burst of native decoders before Android could draw the first frame. Some
+     * tablets terminate the process in that situation. Sequential loading keeps
+     * startup responsive and still warms the complete kit in the background.
+     */
+    fun startLoading() {
+        if (loadingStarted || released) return
+        loadingStarted = true
+        pendingLoads.addAll(prioritizedCatalog())
+        handler.post(::loadNext)
+    }
 
     fun play(
         lane: DrumLane,
@@ -90,21 +106,47 @@ class DrumSamplePlayer(private val context: Context) {
     }
 
     fun release() {
+        released = true
         handler.removeCallbacksAndMessages(null)
+        pendingLoads.clear()
         soundPool.release()
     }
 
-    private fun loadCatalog() {
-        DrumSampleCatalog.entries.forEach(::load)
+    private fun prioritizedCatalog(): List<DrumSampleKey> {
+        val essentials = listOf(
+            DrumLane.SNARE,
+            DrumLane.HIGH_TOM,
+            DrumLane.MID_TOM,
+            DrumLane.FLOOR_TOM,
+            DrumLane.KICK,
+            DrumLane.CRASH,
+            DrumLane.HI_HAT,
+            DrumLane.RIDE,
+        )
+        return DrumSampleCatalog.entries.sortedBy { key ->
+            val lanePriority = essentials.indexOf(key.lane).coerceAtLeast(0)
+            val playableLayerPriority = kotlin.math.abs(key.layer - 5)
+            lanePriority * 100 + playableLayerPriority * 10 + key.variant
+        }
     }
 
-    private fun load(key: DrumSampleKey) {
+    private fun loadNext() {
+        if (released) return
+        val key = pendingLoads.pollFirst() ?: return
         val path = DrumSampleCatalog.assetPath(key)
         runCatching {
             context.assets.openFd(path).use { descriptor ->
                 soundPool.load(descriptor, 1)
             }
-        }.onSuccess { soundId -> soundIds[key] = soundId }
+        }.onSuccess { soundId ->
+            if (soundId != 0) {
+                soundIds[key] = soundId
+            } else {
+                handler.post(::loadNext)
+            }
+        }.onFailure {
+            handler.post(::loadNext)
+        }
     }
 
     private fun chokeOpenHiHat() {
