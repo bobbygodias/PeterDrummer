@@ -1,6 +1,6 @@
 # Peter Drummer
 
-Jogo rítmico Android feito para Peter tocar bateria sobre faixas **drumless**
+Jogo rítmico Android feito para tocar bateria sobre faixas **drumless**
 guardadas no próprio aparelho.
 
 > Estado atual: reconstrução nativa iniciada em 20/08/2026. Ainda não existe
