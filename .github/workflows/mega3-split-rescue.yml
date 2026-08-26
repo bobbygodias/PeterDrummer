@@ -5,6 +5,9 @@ on:
     paths:
       - 'mega3-split-rescue/**'
       - '.github/workflows/mega3-split-rescue.yml'
+  push:
+    branches:
+      - 'build/mega3-split-rescue-v0.1'
   workflow_dispatch:
 
 permissions:
