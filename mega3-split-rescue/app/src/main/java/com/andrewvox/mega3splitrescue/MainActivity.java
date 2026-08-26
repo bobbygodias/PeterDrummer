@@ -263,7 +263,16 @@ public final class MainActivity extends Activity {
     private String execute(String command) {
         Process process = null;
         try {
-            process = Shizuku.newProcess(new String[] {"sh", "-c", command}, null, null);
+            // Shizuku 13 keeps this compatibility bridge package-private. Calling it
+            // reflectively avoids shipping a broad UserService for six fixed commands.
+            java.lang.reflect.Method newProcess = Shizuku.class.getDeclaredMethod(
+                    "newProcess", String[].class, String[].class, String.class);
+            newProcess.setAccessible(true);
+            process = (Process) newProcess.invoke(
+                    null,
+                    new String[] {"sh", "-c", command},
+                    null,
+                    null);
             boolean finished = process.waitFor(12, TimeUnit.SECONDS);
             if (!finished) {
                 process.destroy();
