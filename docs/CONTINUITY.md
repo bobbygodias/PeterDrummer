@@ -7,35 +7,41 @@
 - Package: `com.bobbydias.peterdrummer`.
 - Distribuição pretendida: APK pessoal/offline para Peter; repositório público
   sob CC0 conforme estado anterior.
-- Branch antiga preservada: `archive/unity-prototype-2026-08-20`.
-- Branch nova: `rebuild/native-android-v0.1`.
+- Branch pública ativa: `feature/even-flow-engine-v0.2-public`.
 
 ## Existe agora
 
 - estrutura Gradle;
 - oito pistas fixas;
-- ordem canônica: chimbal, prato de ataque, prato de condução, snare, tom 1,
-  tom 2, surdo e bumbo;
+- ordem canônica: caixa, tom 1, tom 2, surdo, bumbo, chimbal, crash e ride;
 - tela de pista responsiva e multitouch;
 - estado de performance do Peter preparado para golpes simultâneos;
 - partitura temporal de calibração;
 - pontuação e mensagens;
 - menus, configurações, SAF e ranking;
-- ganchos para intro e oito WAVs.
+- intro e 144 samples preparados no commit local privado `7bfed99`;
+- catálogo público preparado para chimbal aberto e pedal;
+- seleção por intensidade e round-robin;
+- esqueleto temporal de **Even Flow** documentado e testado.
+- duas pastas SAF independentes: músicas e partituras extras;
+- catálogo unificado para partituras internas/externas e os três modos;
+- dificuldade e aproximação visual derivadas da partitura.
 
 ## Ainda não foi validado
 
 - build Android no GitHub Actions: testes e `assembleDebug` passaram;
 - execução local nesta sessão: indisponível por ausência de SDK/Gradle;
-- execução em emulador ou aparelho;
-- intro real empacotada;
-- samples reais;
+- execução da v0.2.3 em tablet revelou e reproduziu a antiga ordem incorreta;
+- persistência das duas pastas e a nova ordem da v0.3 ainda aguardam novo APK;
+- geração do APK pessoal com os assets privados;
+- reprodução e latência dos samples em aparelho;
 - backing track externo sincronizado;
 - animações finais do Peter;
-- catálogo corrigido e partituras das músicas.
+- eventos completos da partitura de **Even Flow**;
+- partituras das demais músicas.
 
 ## Próxima ação técnica
 
-Executar o workflow Android com Gradle 8.13, gerar o wrapper binário após essa
-validação, adicionar a intro e os oito WAVs e instalar o APK no aparelho alvo
-para medir toque e latência.
+Executar testes e `assembleDebug` da v0.3 no GitHub. Depois, montar o APK
+pessoal com os assets privados e validar no mesmo tablet: oito sons na ordem,
+permanência das duas pastas, pareamento música/partitura e os três modos.

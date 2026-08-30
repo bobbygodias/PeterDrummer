@@ -3,9 +3,9 @@
 Jogo rítmico Android feito para tocar bateria sobre faixas **drumless**
 guardadas no próprio aparelho.
 
-> Estado atual: reconstrução nativa iniciada em 20/08/2026. Ainda não existe
-> um APK testado em aparelho, mas testes unitários e `assembleDebug` passam no
-> GitHub Actions.
+> Estado atual: catálogo e contrato de pistas da v0.3 em validação. A v0.2.3
+> já foi executada em tablet e revelou os ajustes de ordem, áudio e persistência
+> que esta versão corrige.
 
 ## O que torna este jogo diferente
 
@@ -20,14 +20,14 @@ guardadas no próprio aparelho.
 
 | Índice | Peça |
 |---:|---|
-| 0 | Chimbal |
-| 1 | Prato de ataque / crash |
-| 2 | Prato de condução / ride |
-| 3 | Snare / caixa |
-| 4 | Tom 1 |
-| 5 | Tom 2 |
-| 6 | Surdo |
-| 7 | Bumbo |
+| 0 | Snare / caixa |
+| 1 | Tom 1 |
+| 2 | Tom 2 |
+| 3 | Surdo |
+| 4 | Bumbo |
+| 5 | Chimbal |
+| 6 | Prato de ataque / crash |
+| 7 | Prato de condução / ride |
 
 Os índices fazem parte do formato das partituras e não devem ser reordenados
 depois que os mapas forem publicados.
@@ -38,7 +38,9 @@ depois que os mapas forem publicados.
 - interface vertical e offline;
 - intro opcional antes do menu;
 - menu com os três modos definidos para o produto;
-- seleção persistente da pasta externa;
+- seleção persistente e separada das pastas de músicas e partituras extras;
+- leitura de partituras internas empacotadas e extras `.pdrum.json`;
+- dificuldade e velocidade visual calculadas a partir de cada partitura;
 - volumes independentes de música e bateria;
 - pista em perspectiva com exatamente oito linhas e oito botões;
 - linha de preparação separada da zona real de acerto;
@@ -48,20 +50,18 @@ depois que os mapas forem publicados.
 - três mensagens finais por faixa de acerto;
 - ranking local com cinco posições;
 - demonstração automática usando a mesma partitura de calibração.
+- suporte à intro real no build pessoal;
+- catálogo para 126 samples em camadas de intensidade e round-robin;
+- catálogo para 15 chimbais abertos derivados e 3 fechamentos por pedal;
+- notas distintas para chimbal fechado, aberto e pedal na mesma pista;
+- esqueleto temporal verificado da faixa-laboratório **Even Flow**.
 
-Enquanto as partituras e WAVs definitivos não chegam, os três modos abrem uma
-partitura curta de calibração. Isso prova o motor sem fingir que o catálogo já
-está pronto.
+Enquanto a transcrição de **Even Flow** não está concluída, os três modos
+abrem uma partitura curta de calibração que já exercita as oito pistas e as
+três articulações do chimbal.
 
-## Assets ainda necessários
-
-Coloque o vídeo aprovado em:
-
-`app/src/main/res/raw/peter_drummer_intro.mp4`
-
-Os WAVs seguirão os nomes documentados em
-[`docs/AUDIO_ASSETS.md`](docs/AUDIO_ASSETS.md). Arquivos ausentes ficam em
-silêncio para não impedir a evolução do código.
+Os binários da intro e do kit não são publicados no repositório. O build
+pessoal os recebe localmente depois da validação do pacote certificado.
 
 ## Compilar
 
@@ -87,6 +87,8 @@ produzir ou verificar.
 - [`docs/PRODUCT.md`](docs/PRODUCT.md): fluxo completo aprovado.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): decisões técnicas e relógio.
 - [`docs/AUDIO_ASSETS.md`](docs/AUDIO_ASSETS.md): contrato dos samples.
+- [`docs/EVEN_FLOW_PILOT.md`](docs/EVEN_FLOW_PILOT.md): faixa-laboratório.
+- [`docs/CHART_FORMAT.md`](docs/CHART_FORMAT.md): formato das partituras extras.
 - [`docs/CONTINUITY.md`](docs/CONTINUITY.md): estado verificável para retomada.
 
 ## Conteúdo externo
@@ -94,4 +96,5 @@ produzir ou verificar.
 Este repositório não distribui as faixas musicais. O usuário fornece os próprios
 arquivos drumless e concede acesso somente à pasta escolhida.
 
-Código e documentação: CC0 1.0 Universal, conforme o arquivo `LICENSE`.
+Código e documentação: CC0 1.0 Universal. Áudio e intro seguem as exceções
+descritas em [`ASSET_LICENSE.md`](ASSET_LICENSE.md).

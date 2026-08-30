@@ -18,6 +18,7 @@ da música. Cada evento contém:
 - instante em milissegundos;
 - pista/peça;
 - intensidade MIDI de 1 a 127.
+- articulação, incluindo chimbal fechado, aberto ou pedal.
 
 Eventos com o mesmo tempo e pistas diferentes representam batidas simultâneas.
 
@@ -32,9 +33,10 @@ alteram a posição renderizada, não o tempo musical.
 
 ## Áudio
 
-O `DrumSamplePlayer` atual usa `SoundPool`, suficiente para validar interação e
-nomes de assets. O motor definitivo deve usar Oboe/AAudio para reduzir latência,
-com samples a 48 kHz e callbacks sem alocação, bloqueio ou I/O.
+O `DrumSamplePlayer` usa `SoundPool` e espera um catálogo privado de 144
+assets Opus, com seleção por velocidade e três variações round-robin. Chimbal
+fechado/pedal encerra a voz aberta. Ausência dos assets é tratada como silêncio
+no build público. O motor definitivo deve usar Oboe/AAudio.
 
 O backing track e os samples terão controles de volume independentes. Bluetooth
 precisará de calibração explícita devido à latência variável.
@@ -43,9 +45,22 @@ precisará de calibração explícita devido à latência variável.
 
 - Pasta das músicas: Storage Access Framework com permissão persistente de
   leitura; nenhuma permissão ampla de armazenamento.
+- Pasta de partituras extras: segunda árvore SAF independente, também com
+  permissão persistente de leitura.
 - Configurações: `SharedPreferences` no protótipo.
 - Ranking: JSON local em `SharedPreferences`, ordenado e limitado a cinco.
-- Futuro catálogo: arquivo empacotado + associações locais entre `songId` e URI.
+- Catálogo: partitura interna em `assets/charts`, partitura extra
+  `.pdrum.json` e associação com música externa por nomes declarados.
+
+## Catálogo e dificuldade
+
+`ChartLibrary` reúne as partituras internas e extras, ignora IDs repetidos e
+marca as que ainda não encontraram sua música. Aleatório, escolha manual e
+demonstração consomem a mesma `RhythmChart`; apenas a origem dos golpes muda.
+
+`ChartDifficultyAnalyzer` usa notas por minuto, pico de notas em dois segundos
+e maior acorde. O nível resultante escolhe o tempo de aproximação visual. O
+andamento real continua sendo o tempo absoluto de cada evento da partitura.
 
 ## Arte e animação
 

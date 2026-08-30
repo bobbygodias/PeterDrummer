@@ -15,7 +15,7 @@ class PeterPerformanceStateTest {
         state.strike(DrumLane.KICK, atMs = 1_000L)
 
         assertEquals(
-            listOf(DrumLane.HI_HAT, DrumLane.SNARE, DrumLane.KICK),
+            listOf(DrumLane.SNARE, DrumLane.KICK, DrumLane.HI_HAT),
             state.activeLanes(atMs = 1_050L),
         )
         assertTrue(state.activeLanes(atMs = 1_140L).isEmpty())
